@@ -1,5 +1,6 @@
 <script lang="ts">
   import { stringify } from "postcss";
+  import { parse } from "svelte/compiler";
   let cancompute = true;
   let encryption = "";
   let decryption = "";
@@ -83,6 +84,7 @@
   };
   let reptnums: Record<string, number> = {};
   function encrypt(text: string) {
+    encryption = "";
     convadd = [];
     conversion = [];
     reptnums = {};
@@ -181,6 +183,9 @@
 
   let convText: string = "";
   function decrypt(text: string) {
+    console.log(text);
+    convText = "";
+    decryption = "";
     for (let i = 0; i < text.length / 5; i++) {
       if (text.charAt(i * 5) == "[" && text.charAt(i * 5 + 4) == "]") {
         convText +=
@@ -197,12 +202,71 @@
     } else {
       decryption = "Invalid input";
     }
-    let finalText = "";
-    for (let i = 0; i < convText.length; i++) {
-      if (convText.charAt(i) != "?") {
-        finalText += convText.charAt(i - 1);
+
+    let curstr: string = "";
+    let addFinal: string = "";
+    let j: number = 0;
+    for (let i = 0; i < convText.length; i += 0) {
+      if (convText[i] == "-") {
+        j = 0;
+        while (j <= 25) {
+          console.log(convText[i], "convText[i]");
+          console.log(parseInt(curstr), "curstr");
+          console.log(j, "j");
+          if (parseInt(curstr) > j * 100 && parseInt(curstr) <= (j + 1) * 100) {
+            addFinal += String.fromCharCode(97 + j);
+            curstr = "";
+            i++;
+            break;
+          }
+          j++;
+          console.log(i);
+        }
+      } else {
+        if (convText[i] == "|") {
+          j = 0;
+          while (j <= 25) {
+            console.log(parseInt(curstr), "curstr");
+            console.log(j, "j");
+            if (
+              parseInt(curstr) > j * 100 &&
+              parseInt(curstr) <= (j + 1) * 100
+            ) {
+              console.log(String.fromCharCode(97 + j));
+              addFinal += String.fromCharCode(97 + j);
+              addFinal += " ";
+              curstr = "";
+              i++;
+              break;
+            }
+            j++;
+            console.log(i);
+          }
+        } else {
+          curstr += convText[i];
+          i++;
+          console.log(curstr);
+          console.log(i);
+        }
       }
     }
+    j = 0;
+    while (j <= 25) {
+      console.log(parseInt(curstr), "curstr");
+      console.log(j, "j");
+      if (parseInt(curstr) > j * 100 && parseInt(curstr) <= (j + 1) * 100) {
+        console.log(String.fromCharCode(97 + j));
+        addFinal += String.fromCharCode(97 + j);
+        addFinal += " ";
+        curstr = "";
+
+        break;
+      }
+      j++;
+    }
+    console.log(addFinal);
+    decryption = addFinal;
+    tEuext = "";
   }
   let tEuext: string = "";
 </script>
